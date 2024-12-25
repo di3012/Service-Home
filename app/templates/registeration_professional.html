@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <title>@HomeService</title>
+</head>
+
+<body>
+  <form method="POST" action="{{ url_for('register_professional') }}" onsubmit="console.log('Form submitted');">
+    <section class="vh-100 gradient-custom">
+      {% for message in get_flashed_messages() %}
+      <div class="alert alert-danger" role="alert">
+        {{ message }}
+      </div>
+      {% endfor %}
+      <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+          <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+            <div class="card bg-dark text-white" style="border-radius: 1rem;">
+              <div class="card-body p-5 text-center">
+
+                <div class="mb-md-5 mt-md-4 pb-5">
+
+                  <h3 class="fw-bold mb-2 text-uppercase">Sign Up as Professional</h3>
+                  <p class="text-white-50 mb-5">Please enter your details</p>
+
+                  <div data-mdb-input-init class="form-outline form-white mb-4">
+                    <input type="text" name="name" id="typeNameX" class="form-control form-control-lg"
+                      placeholder="Full Name" required />
+                    <label class="form-label" for="typeNameX">Full Name</label>
+                  </div>
+
+                  <div data-mdb-input-init class="form-outline form-white mb-4">
+                    <input type="email" name="email" id="typeEmailX" class="form-control form-control-lg"
+                      placeholder="Email" required />
+                    <label class="form-label" for="typeEmailX">Email</label>
+                  </div>
+
+                  <div data-mdb-input-init class="form-outline form-white mb-4">
+                    <input type="password" name="password" id="typePasswordX" class="form-control form-control-lg"
+                      placeholder="Password" required />
+                    <label class="form-label" for="typePasswordX">Password</label>
+                  </div>
+
+                  <div data-mdb-input-init class="form-outline form-white mb-4">
+                    <input type="text" name="service" id="typeServiceX" class="form-control form-control-lg"
+                      placeholder="Service Name" required />
+                    <label class="form-label" for="typeServiceX">Service Name</label>
+                  </div>
+
+                  <div data-mdb-input-init class="form-outline form-white mb-4">
+                    <select name="category_name" id="typeCategoryX" class="form-control form-control-lg" required>
+                      {% for category in category %}
+                        <option value="{{ category.name }}">{{ category.name }}</option>
+                      {% endfor %}
+                    </select>
+                    <label for="form-label" for="typeCategoryX">Category</label>
+                  </div>
+
+                  <div data-mdb-input-init class="form-outline form-white mb-4">
+                    <input type="text" name="city" id="typeCityX" class="form-control form-control-lg"
+                      placeholder="City" />
+                    <label class="form-label" for="typeCityX">City</label>
+                  </div>
+
+                  <div data-mdb-input-init class="form-outline form-white mb-4">
+                    <input type="text" name="pin_code" id="typePinCodeX" class="form-control form-control-lg"
+                      placeholder="Pin code" required />
+                    <label class="form-label" for="typePinCodeX">Pin Code</label>
+                  </div>
+
+                  <div data-mdb-input-init class="form-outline form-white mb-4">
+                    <input type="text" name="contact_no" id="typeContactNoX" class="form-control form-control-lg"
+                      placeholder="Contact No" required />
+                    <label class="form-label" for="typeContactNoX">Contact No</label>
+                  </div>
+
+                  <div data-mdb-input-init class="form-outline form-white mb-4">
+                    <input type="text" name="no_of_people" id="typeNoOfPeopleX" class="form-control form-control-lg"
+                      placeholder="No of People" required />
+                    <label class="form-label" for="typeNoOfPeoplX">No of People</label>
+                  </div>
+
+                  <div data-mdb-input-init class="form-outline form-white mb-4">
+                    <input type="text" name="experience" id="typeExperienceX" class="form-control form-control-lg"
+                      placeholder="Experience" required />
+                    <label class="form-label" for="typeExperienceX">Experience</label>
+                  </div>
+
+                  <div data-mdb-input-init class="form-outline form-white mb-4">
+                    <input type="text" name="base_price" id="typeBasePriceX" class="form-control form-control-lg"
+                      placeholder="Base Price" required />
+                    <label class="form-label" for="typeBasePriceX">Base Price</label>
+                  </div>
+
+                  <button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5"
+                    type="submit">Sign Up</button>
+
+                </div>
+                
+                <div class='text-center text-white p-3'>
+                  <p> If the category of your service is not listed here, please contact us.</p>
+                  <p> Email : admin_1@gmail.com</p>
+                </div>
+                
+                <div>
+                  <p class="mb-0">Already have an account? <a href="{{ url_for('login') }}"
+                      class="text-white-50 fw-bold">Login</a></p>
+                  <p class="mb-0">Want to register as a customer? <a href="{{ url_for('register_customer') }}"
+                      class="text-white-50 fw-bold">Switch to Customer Registration</a></p>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </form>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services@Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom JavaScript -->
+    <script>
+        // Function to filter services based on the selected category
+        function filterByCategory(categoryId) {
+            let services = document.querySelectorAll('.service-item');
+
+            // Show all services if 'All Categories' is clicked
+            if (categoryId === 0) {
+                services.forEach(function (service) {
+                    service.style.display = 'block';
+                });
+            } else {
+                // Filter services by category ID
+                services.forEach(function (service) {
+                    if (parseInt(service.getAttribute('data-category-id')) === categoryId) {
+                        service.style.display = 'block';
+                    } else {
+                        service.style.display = 'none';
+                    }
+                });
+            }
+        }
+        
+        function bookService(serviceId, professionalId) {
+            // Set service and professional IDs in the modal inputs
+            document.getElementById('serviceIdInput').value = serviceId;
+            document.getElementById('professionalIdInput').value = professionalId || '';
+
+            // Show the modal
+            const modal = new bootstrap.Modal(document.getElementById('datePickerModal'));
+            modal.show();
+        }
+
+        function confirmBooking() {
+            // Get values from the modal inputs
+            const serviceId = document.getElementById('serviceIdInput').value;
+            const professionalId = document.getElementById('professionalIdInput').value;
+            const serviceDate = document.getElementById('serviceDate').value;
+
+            if (!serviceDate) {
+                alert('Please select a valid date.');
+                return;
+            }
+
+            // Prepare data for the POST request
+            const data = new FormData();
+            data.append('service_id', serviceId);
+            if (professionalId) {
+                data.append('professional_id', professionalId);
+            }
+            data.append('date_of_request', serviceDate);
+
+            // Send the booking request
+            fetch('/book_service', {
+                method: 'POST',
+                body: data,
+                credentials: 'same-origin', // For session authentication
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Service booked successfully!');
+                        location.reload(); // Reload the page to reflect changes
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while booking the service.');
+                });
+        }
+
+
+        function rateProfessional(professionalId, serviceId) {
+            // Prompt user to enter a rating
+            let rating = prompt("Please rate the professional between 1 and 5 (e.g., 1, 1.5, 2, 2.5, ... 5):");
+
+            // Ensure the rating is a valid number and within the range
+            if (rating) {
+                rating = parseFloat(rating);
+                const validRatings = [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
+
+                if (!validRatings.includes(rating)) {
+                    alert("Invalid rating. Please enter a value between 1 and 5 in 0.5 increments.");
+                    return;
+                }
+
+                // Send the rating to the server
+                const data = new FormData();
+                data.append('professional_id', professionalId);
+                data.append('service_id', serviceId);
+                data.append('rating', rating);
+
+                fetch('/rate_professional', {
+                    method: 'POST',
+                    body: data,
+                    credentials: 'same-origin', // For session authentication
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("Rating submitted successfully!");
+                            location.reload(); // Reload the page to reflect updated ratings
+                        } else {
+                            alert("Error: " + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        alert("An error occurred while submitting the rating.");
+                    });
+            } else {
+                alert("Rating submission canceled.");
+            }
+        }
+
+    </script>
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="{{ url_for('index')}}">Services@Home</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('customer_dashboard') }}">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('customer_profile') }}">Profile</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('customer_search') }}">Search</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('customer_summary') }}">Summary</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h2>Welcome, {{ customer.name }}</h2>
+        {% for message in get_flashed_messages() %}
+        <div class="alert alert-danger" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+        <!-- Categories Section -->
+        <div class="row mt-4">
+            <div class="col-md-3">
+                <h3>Categories</h3>
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action" onclick="filterByCategory(0)">All
+                        Categories</a>
+                    {% for category in categories %}
+                    <a href="#" class="list-group-item list-group-item-action" onclick="filterByCategory(category.id)">
+                        <div class="card">
+                            <div class="card-body">
+                                {{ category.name }}
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Services Section -->
+            <div class="col-md-9">
+                <h3>Services</h3>
+                <div id="serviceList">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Service Name</th>
+                                <th>Category</th>
+                                <th>Base Price</th>
+                                <th>Service Provider</th>
+                                <th>Experience</th>
+                                <th>Rate</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for service in services_list %}
+                            <tr data-category-id="{{ service.category.id }}">
+                                <td>{{ service.name }}</td>
+                                <td>{{ service.category.name }}</td>
+                                <td>{{ service.base_price }} rs.</td>
+                                <td>{{ service.professional.name }}</td>
+                                <td>{{ service.professional.expireance }}</td>
+                                <td>{{ service.professional.rate }}</td>
+                                <td>
+                                    <button class="btn btn-primary"
+                                        onclick="bookService({{ service.id }}, {{ service.professional.id if service.professional else 'null' }})">
+                                        Book Now
+                                    </button>
+                                </td>
+
+
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Date Selection Modal -->
+            <div class="modal fade" id="datePickerModal" tabindex="-1" aria-labelledby="datePickerModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="datePickerModalLabel">Select Date for Service</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="datePickerForm">
+                                <input type="hidden" id="serviceIdInput">
+                                <input type="hidden" id="professionalIdInput">
+                                <div class="mb-3">
+                                    <label for="serviceDate" class="form-label">Choose Date</label>
+                                    <input type="date" id="serviceDate" class="form-control" min="{{ min_date }}"
+                                        required>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="confirmBooking()">Confirm</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row mt-4">
+                <div class="col-md-3">
+                    <h3>Current Requests</h3>
+                    <div class="current-service">
+                        {% for service in current_request_list %}
+                        <div class="card">
+                            <div class="card-body">
+                                <strong>Service:</strong> {{ service.service|upper }}<br>
+                                <strong>Service Provider:</strong> {{ service.professional }}<br>
+                                <strong>Phone:</strong> {{ service.professional_phone }}<br>
+                                <strong>Request Date:</strong> {{ service.date_of_request }}<br>
+                                <strong>Status :</strong> {{ service.status }}<br>
+                                <strong>Action:</strong>
+                                <form method="POST" action="{{ url_for('customer_service_request') }}"
+                                    style="display:inline;">
+                                    <input type="hidden" name="service_id" value="{{ service.id }}">
+
+                                    {% if service.status == 'accepted' %}
+                                    <button type="submit" name="action" value="complete"
+                                        class="btn btn-success btn-sm">Completed</button>
+                                    {% elif service.status == 'requested' or service.status == 'accepted' %}
+                                    <button type="submit" name="action" value="cancel"
+                                        class="btn btn-danger btn-sm">Cancel</button>
+                                    {% elif service.status == 'cancelled' or service.status == 'rejected '%}
+                                        <p>{{ service.status }}</p>
+                                    {% endif %}
+                                </form>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="col-md-9">
+                    <h3>Completed Requests</h3>
+                    <div class="completed_request_list">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Service Provider</th>
+                                    <th>Request Date</th>
+                                    <th>Rate</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for request in completed_request_list %}
+                                <tr>
+                                    <td>{{ request.service }}</td>
+                                    <td>{{ request.professional }}</td>
+                                    <td>{{ request.date_of_request }}</td>
+                                    <td>{{ request.rate }}</td>
+                                    <td>
+                                        <button class="btn btn-primary" ,
+                                            onclick="rateProfessional({{ request.professional_id }}, {{ request.service_id}})">
+                                            Rate
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+</body>
+
+</html>

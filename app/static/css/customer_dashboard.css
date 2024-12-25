@@ -1,0 +1,144 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 10px;
+}
+
+h2, h3 {
+    color: #333;
+}
+
+/* Navigation Bar */
+nav {
+    background-color: #007bff;
+    color: white;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-links a {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
+}
+
+.nav-links a:hover {
+    text-decoration: underline;
+}
+
+/* Home Page Section */
+.home-page {
+    background: #e8f0fe;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 8px;
+}
+
+.categories button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.categories button:hover {
+    background-color: #0056b3;
+}
+
+/* Search Section */
+.search-section {
+    margin: 15px 0;
+    padding: 20px;
+    background-color: #fff3cd;
+    border-radius: 8px;
+}
+
+.search-bar {
+    padding: 10px;
+    width: 70%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.search-btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.search-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Packages Section */
+.packages-section {
+    background: #e2ffe2;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 8px;
+}
+
+.packages-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.packages-section li {
+    margin: 8px 0;
+}
+
+/* Service History Section */
+.service-history {
+    background: #ffe2e2;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 8px;
+}
+
+.service-history table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.service-history th, .service-history td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.service-history th {
+    background-color: #f2f2f2;
+}
+
+/* Summary Chart Section */
+.summary-chart {
+    background: #e8e8ff;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 8px;
+}
+
+.chart {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-style: italic;
+}
